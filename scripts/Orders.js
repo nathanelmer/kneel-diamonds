@@ -1,28 +1,27 @@
-import { getMetals, getSizes, getStyles, getOrders } from "./database.js"
-
+import { getMetals, getSizes, getStyles, getOrders } from "./database.js";
 
 const buildOrderListItem = (order) => {
-    return `<li>
-        Order #${order.id} costs $${order.price}
-    </li>`
-}
+  const jewelry = getStyles();
+  const metals = getMetals();
+  const sizes = getSizes();
+  const foundMetal = metals.find((metal) => {return metal.id === order.metalId});
+  const foundSize = sizes.find((size) => {return size.id === order.sizeId});
+  const foundStyle = jewelry.find((style) => {return style.id === order.styleId});
+  const totalCost = foundMetal.price + foundSize.price + foundStyle.price;
+  return `<li>
+        Order #${order.id} costs $${totalCost.toFixed(2)}
+    </li>`;
+};
 
-export const currentOrders = () => {
-    /*
-        Can you explain why the state variable has to be inside
-        the component function for Orders, but not the others?
-    */
-        const orders = getOrders()
-        const jewelry = getStyles()
-        const metals = getMetals()
-        const sizes = getSizes()
-    let html = "<ul>"
+export const Orders = () => {
+  const orders = getOrders();
 
-    const listItems = orders.map(buildOrderListItem)
+  let html = "<ul>";
 
-    html += listItems.join("")
-    html += "</ul>"
+  const listItems = orders.map((order) => buildOrderListItem(order));
 
-    return html
-}
+  html += listItems.join("");
+  html += "</ul>";
 
+  return html;
+};
